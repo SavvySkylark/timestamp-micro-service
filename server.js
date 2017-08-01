@@ -35,12 +35,16 @@ app.get("/:timestamp", function (req, res) {
     unix: null,
     natural: null
   }
-  try {
+  console.log(parseInt(timestampString));
+  if(parseInt(timestampString) === NaN) {
+  console.log('hit');
     datetime = new Date(timestampString);
-  } catch (e) {
-    res.end(JSON.stringify(resBody));
+  } else {
+    datetime = new Date(parseInt(timestampString));
   }
+  res.end(JSON.stringify(resBody));
   console.log(timestampString);
+  console.log(datetime.toDateString());
   resBody.unix = datetime.valueOf();
   resBody.natural = datetime.toDateString();
   res.end(JSON.stringify(resBody));

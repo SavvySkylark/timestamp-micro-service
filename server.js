@@ -16,18 +16,6 @@ app.get("/", function (request, response) {
   response.sendFile(__dirname + '/views/index.html');
 });
 
-
-
-app.get("/dreams", function (request, response) {
-  response.send(dreams);
-});
-
-// could also use the POST body instead of query string: http://expressjs.com/en/api.html#req.body
-app.post("/dreams", function (request, response) {
-  dreams.push(request.query.dream);
-  response.sendStatus(200);
-});
-
 app.get("/:timestamp", function (req, res) {
   var timestampString = req.params.timestamp;
   var datetime;
@@ -35,28 +23,18 @@ app.get("/:timestamp", function (req, res) {
     unix: null,
     natural: null
   }
-  console.log(parseInt(timestampString));
-  if(parseInt(timestampString) === NaN) {
-  console.log('hit');
-    datetime = new Date(timestampString);
+  
+  var milliSecs = Date.parse(timestampString);
+  
+  if (isNaN(milliSecs)) {
+    res.end(JSON.stringify(resBody));
   } else {
-    datetime = new Date(parseInt(timestampString));
+    datetime = new Date(milliSecs);
+    resBody.unix = datetime.valueOf();
+    resBody.natural = datetime.toDateString();
   }
   res.end(JSON.stringify(resBody));
-  console.log(timestampString);
-  console.log(datetime.toDateString());
-  resBody.unix = datetime.valueOf();
-  resBody.natural = datetime.toDateString();
-  res.end(JSON.stringify(resBody));
 });
-
-// Simple in-memory store for now
-var dreams = [
-  "Find and count some sheep",
-  "Climb a really tall mountain",
-  "Wash the dishes"
-];
-
 
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {
